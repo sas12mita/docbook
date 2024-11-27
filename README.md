@@ -1,7 +1,8 @@
-DoctorBook is a simple and user-friendly platform for managing doctor appointments. It connects patients with doctors, making it easy to book appointments and view schedules. Patients can find doctors by specialization and location, while doctors can manage their appointments efficiently. With DoctorBook, scheduling healthcare is quick, reliable, and hassle-free.
+**DoctorBook**
+This is a simple and user-friendly platform for managing doctor appointments. It connects patients with doctors, making it easy to book appointments and view schedules. Patients can find doctors by specialization and location, while doctors can manage their appointments efficiently. With DoctorBook, scheduling healthcare is quick, reliable, and hassle-free.
 
 
-**For Patients:
+****For Patients:**
 **•	User Sign-up/Sign-in: Users can create an account using a unique phone number and password, and choose if they are a doctor or patient.
 •	Basic User Details: Patients can enter their personal information for easy follow-up.
 •	View Available Doctors: Patients can see a list of available doctors and their free time slots.
@@ -15,7 +16,7 @@ DoctorBook is a simple and user-friendly platform for managing doctor appointmen
 •	View Patient Details: Doctors can view basic patient details for easy diagnosis.
 The application likely uses a calendar system to manage appointments and avoid scheduling conflicts.
 
-User:
+**User:**
 Id,
 Name,
 Email,
@@ -24,26 +25,26 @@ role,
 Address,
 
 
-Doctor:
+**Doctor:**
 Id,
 user_id,
 Specialization_id,
 
-Patient:
+**Patient:**
 Id,
 User_id,
 
-Specialization
+**Specialization**
 Id,
 Name,
 
-Appointment:
+**Appointment:**
 Id,
 Doc_id,
 Patient_id,
 Appointment date and time
 
-schedule:
+**schedule:**
 doctor_id
 date
 start_time
