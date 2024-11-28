@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Doctor;
-class adminController extends Controller
+
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,9 +16,9 @@ class adminController extends Controller
     {
         return view('admins.dashboard'); // This is the view for the admin panel's main page
     }
-   
+
     // This method handles the custom route for the dashboard
-   
+
 
 
     /**
@@ -34,17 +36,22 @@ class adminController extends Controller
     {
         //
     }
-     public function patient(Request $request)
-     {
+    public function patient(Request $request)
+    {
         $patients = Patient::with('user')->get(); // Eager load the user relationship
-        return view('admins.patient',compact('patients'));
-     }
-       public function doctor(Request $request)
-     {
-        
+        return view('admins.patient', compact('patients'));
+    }
+    public function doctor(Request $request)
+    {
+
         $doctors = Doctor::with('user')->get(); // Eager load the user relationship
-        return view('admins.doctor',compact('doctors'));
-     }
+        return view('admins.doctor', compact('doctors'));
+    }
+    public function appointment(Request $request)
+    {
+        $appointments = Appointment::with(['doctor', 'patient'])->get();
+        return view('admins.appointment', compact('appointments'));
+    }
     /**
      * Display the specified resource.
      */

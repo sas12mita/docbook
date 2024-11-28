@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use App\Models\Specialization;
 use Illuminate\Http\Request;
 
+
 class DoctorController extends Controller
 {
     /**
@@ -17,10 +18,10 @@ class DoctorController extends Controller
     {
         return view('doctors.dashboard');
     }
-    public function home()
+    public function doctorlist()
     {
-        $doctors = Doctor::with('specialization', 'user')->get();
-        return view('welcome', compact('doctors')); // Home page view
+        $doctors = Doctor::with('specialization', 'user')->paginate(6);
+        return view('doctors.list', compact('doctors')); // Home page view
     }
 
 
@@ -48,32 +49,32 @@ class DoctorController extends Controller
         $request->validate([
             'specialization_id' => 'required|exists:specializations,id',
         ]);
-    
+
         $specialization = Specialization::find($request->specialization_id);
         $doctors = Doctor::where('specialization_id', $specialization->id)->get();
-    
+
         return view('doctors.show', compact('doctors', 'specialization'));
     }
 
     public function getSchedule($doctorId)
-{
-    // Retrieve the doctor's schedule based on doctor ID
-    $doctor = Doctor::find($doctorId);
-    
-    if (!$doctor) {
-        return response()->json(['error' => 'Doctor not found'], 404);
+    {
+        // Retrieve the doctor's schedule based on doctor ID
+        $doctor = Doctor::find($doctorId);
+
+        if (!$doctor) {
+            return response()->json(['error' => 'Doctor not found'], 404);
+        }
+
+        $schedules = $doctor->schedules()->get(['date', 'start_time', 'end_time', 'day']);
+
+        return response()->json(['schedules' => $schedules]);
     }
 
-    $schedules = $doctor->schedules()->get(['date', 'start_time', 'end_time', 'day']);
 
-    return response()->json(['schedules' => $schedules]);
-}
-
-    
     /**
      * Display the specified resource.
      */
-   
+
     public function show(string $id)
     {
         return view('doctors.dashboard');
@@ -100,6 +101,18 @@ class DoctorController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // Find the doctor by ID
+        $doctor = Doctor::find($id);
+
+        // Check if the doctor exists
+        if (!$doctor) {
+            return redirect()->back()->with('error', 'Doctor not found.');
+        }
+
+        // Delete the doctor
+        $doctor->delete();
+
+        // Redirect with a success message
+        return redirect()->route('admins.doctor')->with('success', 'Doctor deleted successfully.');
     }
 }

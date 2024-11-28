@@ -1,7 +1,7 @@
 <x-app-layout>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Patients</title>
+    <title>List of Patients</title>
     <style>
         .container {
             max-width: 900px;
@@ -43,17 +43,28 @@
             <table class="table">
                 <thead>
                     <tr>
+                        
+                        <th>SN</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Address</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($patients as $patient)
                         <tr>
-                            <td>{{ $patient->user->name }}</td>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $patient->user->name }}</td>
                             <td>{{ $patient->user->email }}</td>
                             <td>{{ $patient->user->address ?? 'N/A' }}</td>
+                            <td class="flex space-x-2">
+                                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" style="background-color:cadetblue;padding:10px;color:white">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

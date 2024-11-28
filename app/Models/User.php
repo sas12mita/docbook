@@ -21,7 +21,7 @@ class User extends Authenticatable
     protected $guarded = [];
     public function patient()
     {
-         return $this->hasOne(Patient::class);
+         return $this->hasOne(Patient::class,'user_id');
     }
     public function doctor()
     {

@@ -43,17 +43,27 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>SN</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Address</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($doctors as $doctor)
                         <tr>
+                            <td>{{$loop->iteration}}</td>
                             <td>{{ $doctor->user->name }}</td>
                             <td>{{ $doctor->user->email }}</td>
                             <td>{{ $doctor->user->address ?? 'N/A' }}</td>
+                            <td class="flex space-x-2">
+                                <form action="{{ route('doctors.destroy', $doctor->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" style="background-color:cadetblue;padding:10px;color:white">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

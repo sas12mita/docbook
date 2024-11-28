@@ -54,6 +54,15 @@ class ScheduleController extends Controller
     // Validate the request
     $validated = $request->validate([
         'date' => 'required|date',
+        function ($attribute, $start_time, $fail) {
+            // Get the current time
+            $currentTime = now()->format('H:i');
+
+            // Compare the input start time with the current time
+            if ($start_time < $currentTime) {
+                $fail('The ' . $attribute . ' must be a time after or equal to the current time.');
+            }
+        },
         'start_time' => 'required|date_format:H:i',
         'end_time' => 'required|date_format:H:i|after:start_time',
         'day' => 'required|string',
@@ -82,15 +91,12 @@ class ScheduleController extends Controller
     $schedule = Schedule::create([
         'doctor_id' => $doctorId,
         'date' => $validated['date'],
-        'start_time' => $validated['start_time'],
+        'start_time' => $validated['start_time'] ,
         'end_time' => $validated['end_time'],
         'day' => $validated['day'],
     ]);
 
-    return response()->json([
-        'message' => 'Schedule created successfully!',
-        'schedule' => $schedule,
-    ], 201);
+    return view('doctors.dashboard');
 }
 
     public function show(string $id)

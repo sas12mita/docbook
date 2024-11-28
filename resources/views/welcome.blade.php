@@ -6,6 +6,17 @@
     <title>Doctor Appointment System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Hero Section */
+        .hero {
+            background-image: url('https://via.placeholder.com/1200x500?text=Healthcare+Banner');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 15px;
+        }
+
         /* Grid layout for the cards */
         .doctors-list {
             display: grid;
@@ -20,18 +31,27 @@
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            text-align: center;
         }
 
         .doctor-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .doctor-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
         .doctor-card h3 {
-            margin-top: 0;
-            font-size: 1.2em;
+            margin-top: 15px;
+            font-size: 1.5em;
             color: #333;
         }
 
@@ -42,6 +62,21 @@
 
         .doctor-card strong {
             color: #333;
+        }
+
+        /* Call to Action Button */
+        .cta-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background-color: #0056b3;
         }
 
         /* Responsive layout for smaller screens */
@@ -63,47 +98,92 @@
             }
         }
     </style>
-    </style>
 </head>
 <body class="bg-blue-50">
 
+    <!-- Header -->
     <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-6 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-blue-600">HealthCare+</a>
+            <div><a href="/" class="text-2xl font-bold text-blue-600">HealthCare+</a></div>
             <div>
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="text-blue-600 font-semibold">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="text-blue-600 font-semibold mr-4">Log in</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500">Sign up</a>
-                    @endif
-                @endauth
+                <a href="{{ route('login') }}" class="text-blue-600 font-semibold mr-4">Log in</a>
+                <a href="{{ route('register') }}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500">Sign up</a>
             </div>
         </div>
     </header>
 
-    <main class="py-16">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl font-bold text-blue-700">Your Health, Our Priority</h1>
-            <p class="text-lg text-gray-600 mt-4">Book an appointment with the best doctors in town and receive top-notch healthcare.</p>
-            <div class="mt-8">
-                <a class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-500">List Of Doctor</a>
+    <!-- Hero Section -->
+    <section class="bg-white flex items-center justify-center mt-0">
+    <div class="pl-3 container mx-auto  flex flex-col lg:flex-row items-center">
+        <!-- Left Side: Text Content -->
+        <div class="lg:w-1/2 text-center lg:text-left"><a href="{{ route('doctors.list') }}" class="inline-block  bg-blue-200 py-3 px-6 rounded-lg hover:bg-green-500 transition duration-300">List of Doctors</a>
+<br><br>
+
+            <h1 class="text-4xl font-bold text-blue-700">Your Partner In Health and<br> Wellness</h1>
+            <p class="text-lg text-gray-600 mt-4">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+           
+        </div>
+
+        <!-- Right Side: Image -->
+        <div class="lg:w-1/2 mt-8 lg:mt-0">
+            <img src="https://plus.unsplash.com/premium_photo-1681842906523-f27efd0d1718?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZG9jdG9yc3xlbnwwfHwwfHx8MA%3D%3D" alt="Healthcare Image" class="w-full h-auto rounded-lg shadow-lg">
+        </div>
+    </div>
+</section>
+
+
+    <!-- Healthcare Services Section -->
+    <section class="py-16 bg-blue-50">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-3xl font-semibold text-blue-700">Our Healthcare Service</h2>
+            <p class="text-gray-600 mt-4 mb-12">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+
+            <!-- Service Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Emergency Department Card -->
+                <div class="service-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="text-4xl text-blue-600 mb-4">
+                        <i class="fas fa-hospital-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700 mb-2">Emergency Department</h3>
+                    <p class="text-gray-600">If you use this site regularly and would like to...</p>
+                </div>
+
+                <!-- Pediatric Department Card -->
+                <div class="service-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="text-4xl text-blue-600 mb-4">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700 mb-2">Pediatric Department</h3>
+                    <p class="text-gray-600">If you use this site regularly and would like to...</p>
+                </div>
+
+                <!-- Neurology Department Card -->
+                <div class="service-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="text-4xl text-blue-600 mb-4">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700 mb-2">Neurology Department</h3>
+                    <p class="text-gray-600">If you use this site regularly and would like to...</p>
+                </div>
+
+                <!-- Cardiology Department Card -->
+                <div class="service-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="text-4xl text-blue-600 mb-4">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700 mb-2">Cardiology Department</h3>
+                    <p class="text-gray-600">If you use this site regularly and would like to...</p>
+                </div>
             </div>
         </div>
-        <div class="doctors-list">
-        @foreach ($doctors as $doctor)
-            <div class="doctor-card">
-                <img src="https://media.istockphoto.com/id/177373093/photo/indian-male-doctor.jpg?s=612x612&w=0&k=20&c=5FkfKdCYERkAg65cQtdqeO_D0JMv6vrEdPw3mX1Lkfg="
-                height="100px";>
-                <h3 style="color:green;font-weight:799"><center>{{ $doctor->user->name }}</center></h3>
-                <p><strong>Specialization:</strong> {{ $doctor->specialization->name ?? 'General' }}</p>
-                <p><strong>Address:</strong> {{ $doctor->user->address }}</p>
-                <p><strong>Phone Number:</strong> {{ $doctor->user->phone}}</p>
-            </div>
-        @endforeach
+    </section>
+    
+
+        </div>
     </main>
 
+    <!-- Footer -->
     <footer class="bg-white py-6 mt-16">
         <div class="container mx-auto text-center">
             <p class="text-gray-500"> HealthCare+. All rights reserved.</p>

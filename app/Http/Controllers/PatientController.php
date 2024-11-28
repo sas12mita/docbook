@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
+use app\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Models\Patient;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 class PatientController extends Controller
@@ -11,10 +13,10 @@ class PatientController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
+    {           
         $user = Auth::user();
-
-         return view('patients.dashboard', compact('user'));
+        // Pass the user and recent appointments to the view
+        return view('patients.dashboard', compact('user'));
 }
 
     /**
@@ -22,7 +24,6 @@ class PatientController extends Controller
      */
     public function create()
     {
-        return "hell create";
     }
     public function dashboard()
      {
@@ -69,6 +70,17 @@ class PatientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $patient = Patient::find($id);
+
+        if (!$patient) {
+            return redirect()->back()->with('error', 'Patient not found.');
+        }
+
+        // Delete the patient
+        $patient->delete();
+
+        // Redirect with a success message
+        return redirect()->route('admins.patient')->with('success', 'Patient deleted successfully.');
+   
     }
 }

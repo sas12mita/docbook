@@ -65,7 +65,7 @@
                     <a href="{{ route('admins.patient') }}">
                         <h3>Patients</h3>
                     </a>
-                    <p>Total: <span class="total-number">120</span></p>
+                    <p>Total: <span class="total-number">15</span></p>
                 </div>
             </div>
 
@@ -75,14 +75,16 @@
                     <a href="{{ route('admins.doctor') }}">
                         <h3>Doctors</h3>
                     </a>
-                    <p>Total: <span class="total-number">45</span></p>
+                    <p>Total: <span class="total-number">11</span></p>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-content">
-                    <h3>Appointments</h3>
-                    <p>Total: <span class="total-number">200</span></p>
+                <a href="{{ route('admins.appointment') }}">
+                        <h3>Appointments</h3>
+                </a>
+                    <p>Total: <span class="total-number">7</span></p>
                 </div>
             </div>
 

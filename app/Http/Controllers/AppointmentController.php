@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 use App\Models\Appointment;
+use App\Models\Doctor;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class AppointmentController extends Controller
 {
@@ -18,13 +21,17 @@ class AppointmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        return view('appointments.create');
-    }
+    public function create(string $id)
+{
+
+    $doctor = Doctor::find($id);
+    $appointments = Appointment::where('doctor_id', $doctor->id)->get();
+    $schedule = Schedule::where('doctor_id', $doctor->id)->first();
+    return view('appointments.create', compact('appointments', 'doctor', 'schedule'));
+}
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage.c
      */
     public function store(Request $request)
     {
@@ -34,6 +41,8 @@ class AppointmentController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
+
+        $doctor_id = $request->doctor_id;
     
         $conflict = Appointment::where('doctor_id', $validated['doctor_id'])
             ->where('appointment_date', $validated['appointment_date'])
@@ -42,9 +51,12 @@ class AppointmentController extends Controller
                     ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']]);
             })
             ->exists();
+
     
         if ($conflict) {
-            return back()->withErrors(['message' => 'The selected time slot is already taken.']);
+            $appointments=Appointment::where('doctor_id',$validated['doctor_id']);
+            return redirect()->route('appointments.create',$doctor_id)->withErrors([ 'The selected time is not available.']);
+
         }
     
         Appointment::create([
@@ -53,12 +65,27 @@ class AppointmentController extends Controller
             'appointment_date' => $validated['appointment_date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
+            'schedule_id'=>$request->schedule_id,
         ]);
+        return view('patients.dashboard');
+       }
     
-        return redirect()->route('welcome')->with('success', 'Appointment booked successfully!');
-    }
-    
+    public function statusAppointment(Request $request)  {
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+        ]);
 
+        // Find the appointment by ID
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
+        // Change the status to 'approved' or to a custom status
+        $appointment->status = 'approved'; // Or 'pending', 'rejected', etc.
+        $appointment->save();
+
+        // Redirect back with a success message
+        return redirect()->route('appointments.doctor')->with('success', 'Appointment status updated.');
+    
+    }
 
     /**
      * Display the specified resource.
@@ -82,24 +109,20 @@ class AppointmentController extends Controller
 
     // Return a view to display the appointments
     return view('appointments.patient', compact('appointments'));
-}public function doctorAppointments()
+}
+
+
+public function doctorAppointments()
 {
-    // Get the authenticated doctor
-    $doctor = Auth::user()->doctor;
-
-    if (!$doctor) {
-        abort(403, 'Access denied');
+    {
+        $doctor =Doctor::where('user_id',Auth::user()->id)->first();
+        $appointmentsdoctor = Appointment::with('patient')
+            ->where('doctor_id', $doctor->id) // Adjust for your doctor authentication
+            ->get();
+    
+        return view('appointments.doctor', compact('appointmentsdoctor'));
     }
-
-    // Fetch appointments for the doctor
-    $appointments = Appointment::where('doctor_id', $doctor->id)
-        ->with('patient') // Eager load patient
-        ->orderBy('appointment_date', 'asc')
-        ->orderBy('start_time', 'asc')
-        ->get();
-
-    // Return a view to display the doctor's appointments
-    return view('appointments.doctor', compact('appointments'));
+    
 }
 
 
@@ -109,7 +132,6 @@ class AppointmentController extends Controller
      */
     public function edit(string $id)
     {
-        //
     }
 
     /**
@@ -125,6 +147,18 @@ class AppointmentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $appointment = Appointment::find($id);
+
+        // Check if the appointment exists
+        if (!$appointment) {
+            return redirect()->back()->with('error', 'Appointment not found.');
+        }
+    
+        // Delete the appointment
+        $appointment->delete();
+    
+        // Redirect with a success message
+        return redirect()->route('appointments.patient')->with('success', 'Appointment deleted successfully.');
+    
     }
 }

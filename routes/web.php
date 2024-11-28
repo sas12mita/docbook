@@ -10,8 +10,10 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Home route for the welcome page
-Route::get('/', [DoctorController::class, 'home'])->name('welcome');
-
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::get('/doctorlist',[DoctorController::class, 'doctorlist'])->name('doctors.list');
 // Dashboard route for authenticated users
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -35,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/doctors/{doctor}', [DoctorController::class, 'show'])->name('doctors.show'); // Show a specific doctor
     Route::get('/doctors/{doctor}/edit', [DoctorController::class, 'edit'])->name('doctors.edit'); // Show form to edit a doctor
     Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('doctors.update'); // Update a specific doctor
-    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy'); // Delete a specific doctor
+    Route::delete('/doctors/{id}', [DoctorController::class, 'destroy'])->name('doctors.destroy'); // Delete a specific doctor
 
     // Custom route for doctors by specialization
     Route::post('/doctors/by-specialization', [DoctorController::class, 'showDoctors'])->name('doctors.bySpecialization');
@@ -46,6 +48,7 @@ Route::middleware('auth')->group(function () {
     // Patient-related routes
     Route::resource('patients', PatientController::class);
     Route::get('/patients/dashboard', [PatientController::class, 'dashboard'])->name('patients.dashboard');
+    Route::delete('/patients/{id}', [PatientController::class, 'destroy'])->name('patients.destroy');
 
     // Specializations resource routes
     // Route::resource('specializations', SpecializationController::class);
@@ -77,21 +80,23 @@ Route::middleware('auth')->group(function () {
     Route::resource('schedules', ScheduleController::class);
     // Route::resource('appointments', controller: AppointmentController::class);
 
-Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index'); // List all appointments
-Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create'); // Show form for creating a new appointment
-Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store'); // Save a new appointment
-Route::get('appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show'); // Show a single appointment
-Route::get('appointments/{appointment}/edit', [AppointmentController::class, 'edit'])->name('appointments.edit'); // Show form to edit an appointment
-Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update'); // Update an appointment
-Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); // Delete an appointment
-Route::get('appoint/patient', [AppointmentController::class, 'patientAppointments'])->name('appointments.patient');
-Route::get('appointdoctor/doctor', [AppointmentController::class, 'doctorAppointments'])->name('appointments.doctor');
+    Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index'); // List all appointments
+    Route::get('appointments/create/{id}', [AppointmentController::class, 'create'])->name('appointments.create'); // Show form for creating a new appointment
+    Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store'); // Save a new appointment
+    Route::get('appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show'); // Show a single appointment
+    Route::get('appointments/{id}/edit', [AppointmentCaontroller::class, 'edit'])->name('appointments.edit'); // Show form to edit an appointment
+    Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update'); // Update an appointment
+    Route::delete('appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); // Delete an appointment
+    Route::get('appoint/patient', [AppointmentController::class, 'patientAppointments'])->name('appointments.patient');
+    Route::get('appointdoctor/doctor', [AppointmentController::class, 'doctorAppointments'])->name('appointments.doctor');
+    Route::post('appoint/status', [AppointmentController::class, 'statusAppointment'])->name('appointments.status');
+
     // Admin resource routes (you can add more resources if needed)
 
     Route::resource('admins', AdminController::class);
-    Route::get('ad/patient',[AdminController::class,'patient' ])->name('admins.patient');
-    Route::get('ad/doctor',[AdminController::class,'doctor' ])->name('admins.doctor');
-
+    Route::get('ad/patient', [AdminController::class, 'patient'])->name('admins.patient');
+    Route::get('ad/doctor', [AdminController::class, 'doctor'])->name('admins.doctor');
+    Route::get('ad/appointment', [AdminController::class, 'appointment'])->name('admins.appointment');
 });
 
 require __DIR__ . '/auth.php';
