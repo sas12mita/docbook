@@ -92,18 +92,22 @@
         <div class="appointment-list">
             @foreach ($appointmentsdoctor as $appointment)
             <div class="appointment-item">
+
                 <strong>Patient Name:</strong> {{ optional($appointment->patient)->name ?? 'N/A' }}<br>
-                <strong>Email:</strong> <a href="mailto:{{ optional($appointment->patient)->email ?? '' }}" style="color: #007bff;">{{ optional($appointment->patient)->email ?? 'N/A' }}</a>
+                <strong>Email:</strong> <a href="mailto:{{ optional($appointment->patient)->email ?? '' }}" style="color: #007bff;">{{ optional($appointment->patient)->email ?? 'N/A' }}</a><br>
+                <strong>Date:</strong> {{ $appointment->appointment_date}}<br>
+                <strong>Time:</strong> <span style="color:red"> {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
+                </span>
                 <div class="button-row">
                     @if($appointment->status=='pending')
-                    <form  action="{{ route('appointments.status') }}" method="POST">
+                    <form action="{{ route('appointments.status') }}" method="POST">
                         @csrf
                         <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
                         <div class="text-center">
-                    <button type="submit" class="btn btn-primary btn-lg" style="padding: 8px 20px; font-size: 1.2rem; color:white;border-radius: 50px; background-color: green; transition: background-color 0.3s ease;">
-                        Approve
-                    </button>
-                </div>
+                            <button type="submit" class="btn btn-primary btn-lg" style="padding: 8px 20px; font-size: 1.2rem; color:white;border-radius: 50px; background-color: green; transition: background-color 0.3s ease;">
+                                Approve
+                            </button>
+                        </div>
 
                     </form>
                     @else

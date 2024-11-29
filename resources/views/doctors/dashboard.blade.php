@@ -12,21 +12,21 @@
             /* Header Section */
             .header {
                 text-align: center;
-                padding: 50px 20px;
+                padding: 30px 10px;
                 background-color: #007bff;
                 color: white;
                 border-bottom: 5px solid #0056b3;
             }
 
-            .header h1 {
-                font-size: 2.5rem;
-                margin-bottom: 15px;
+            .header h3 {
+                font-size: 2.2rem;
+                margin-bottom: 5px;
             }
 
             .header p {
-                font-size: 1.2rem;
+                font-size: 1rem;
                 margin: 0;
-                color: #d6e0f5;
+                color: white;
             }
 
             /* Container Styling */
@@ -112,7 +112,7 @@
 
     <!-- Header Section -->
     <div class="header">
-        <h1>Welcome to HealthCare+</h1>
+        <h3>Welcome to Doctor Dashboard</h3>
         <p>Manage your schedules and appointments with ease!</p>
     </div>
 

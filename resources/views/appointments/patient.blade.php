@@ -117,35 +117,44 @@
         <h2 style="color: #007bff; text-align: center; font-family: Arial, sans-serif; font-size: 24px;">My Appointments</h2>
 
         @if ($appointments->isEmpty())
-            <p>No appointments found.</p>
+        <p>No appointments found.</p>
         @else
-            <div class="button-container">
-                <a href="{{ route('specializations.patient') }}" class="btn" style="display: inline-block; padding: 8px 21px; background-color: #0844ff; color: white; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background-color 0.3s ease;">
-                    <i class="fas fa-calendar-alt"></i> View Schedule
-                </a>
-            </div>
+        <div class="button-container">
+            <a href="{{ route('specializations.patient') }}" class="btn" style="display: inline-block; padding: 8px 21px; background-color: #0844ff; color: white; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background-color 0.3s ease;">
+                <i class="fas fa-calendar-alt"></i> View Schedule
+            </a>
+        </div>
 
-            <div class="appointment-list">
-                @foreach ($appointments as $appointment)
-                <div class="appointment-item">
-                    <div>
-                        <strong>Doctor:</strong> {{ $appointment->doctor->user->name }}<br>
-                        <strong>Email:</strong>
-                        <a href="mailto:{{ $appointment->doctor->user->email }}">
-                            {{ $appointment->doctor->user->email }}
-                        </a><br>
-                        <strong>Date:</strong> {{ $appointment->appointment_date }}<br>
-                        <strong>Time:</strong> {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
-                    </div>
-                    
-                    @if($appointment->status == 'pending')
-                    <div style="color:red"><button>pending</button></div>
-                    @else
-                    <div style="background-color:lightgreen"><button>approved</button></div>
-                    @endif
+        <div class="appointment-list">
+            @foreach ($appointments as $appointment)
+            <div class="appointment-item">
+                <div>
+                    <strong>Doctor:</strong> {{ $appointment->doctor->user->name }}<br>
+                    <strong>Email:</strong>
+                    <a href="mailto:{{ $appointment->doctor->user->email }}">
+                        {{ $appointment->doctor->user->email }}
+                    </a><br>
+                    <strong>Date:</strong> {{ $appointment->appointment_date }}<br>
+                    <strong>Time:</strong> {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
                 </div>
-                @endforeach
+
+                @if($appointment->status == 'pending')
+                <a href="{{ route('appointments.edit', $appointment->id) }}" style="background-color:azure;padding:10px;color:black">Edit</a>
+
+                <!-- Delete Button -->
+                <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background-color:cadetblue;padding:10px;color:white">Delete</button>
+                </form>
+                
+                <div style="color:red"><button>pending</button></div>
+                @else
+                <div style="background-color:lightgreen"><button>approved</button></div>
+                @endif
             </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </x-app-layout>

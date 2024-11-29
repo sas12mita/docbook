@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::get('appointments/create/{id}', [AppointmentController::class, 'create'])->name('appointments.create'); // Show form for creating a new appointment
     Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store'); // Save a new appointment
     Route::get('appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show'); // Show a single appointment
-    Route::get('appointments/{id}/edit', [AppointmentCaontroller::class, 'edit'])->name('appointments.edit'); // Show form to edit an appointment
+    Route::get('appointments/{id}/edit', [AppointmentController::class, 'edit'])->name('appointments.edit'); // Show form to edit an appointment
     Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update'); // Update an appointment
     Route::delete('appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); // Delete an appointment
     Route::get('appoint/patient', [AppointmentController::class, 'patientAppointments'])->name('appointments.patient');
