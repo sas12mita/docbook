@@ -3,15 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Specialization;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class SpecializationController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $userId = $request->query('user');
+
+        // Find the user or fail (throws 404 if not found)
+        $user = User::findOrFail($userId);
+    
+        if (Auth::id() !== $user->id || $user->role !== 'doctor') {
+            abort(403, 'Unauthorized access');
+        }
         $specializations=Specialization::all();
         return view('specializations.index', compact('specializations'));
     }
@@ -26,16 +38,30 @@ class SpecializationController extends Controller
      */
     public function create()
     {
-        
+        return view('specializations.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+ 
+        public function store(Request $request)
+        {
+            // Validate the input
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+    
+            // Create the specialization
+            Specialization::create([
+                'name' => $request->name,
+            ]);
+    
+            // Redirect back to the list of specializations
+            return redirect()->route('specializations.create');
+        }
+    
+  
 
     /**
      * Display the specified resource.

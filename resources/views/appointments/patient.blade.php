@@ -139,15 +139,16 @@
                 </div>
 
                 @if($appointment->status == 'pending')
-                <a href="{{ route('appointments.edit', $appointment->id) }}" style="background-color:azure;padding:10px;color:black">Edit</a>
-
+                @can('update', $appointment)
+                <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary">Edit</a>
+                @endcan
                 <!-- Delete Button -->
                 <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" style="background-color:cadetblue;padding:10px;color:white">Delete</button>
                 </form>
-                
+
                 <div style="color:red"><button>pending</button></div>
                 @else
                 <div style="background-color:lightgreen"><button>approved</button></div>

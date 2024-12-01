@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
-use Illuminate\Http\Request;
-use App\Models\Patient;
 use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\Specialization;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -55,6 +56,13 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
+    public function specialization(Request $request)
+    {
+        $specializations=Specialization::all();
+        return view('admins.specialization', compact('specializations'));
+   
+
+    }
     public function show(string $id)
     {
         //

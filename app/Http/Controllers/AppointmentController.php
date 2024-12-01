@@ -1,16 +1,18 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 class AppointmentController extends Controller
 {
+
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -129,6 +131,8 @@ class AppointmentController extends Controller
     public function edit(string $id)
     {
         $appointment = Appointment::findOrFail($id);
+        $this->authorize('update', $appointment);
+
         // Find the doctor and schedule associated with the appointment
         $doctor = Doctor::find($appointment->doctor_id);
         $schedule = Schedule::where('doctor_id', $doctor->id)->first();
@@ -152,6 +156,8 @@ class AppointmentController extends Controller
         ]);
 
         $appointment = Appointment::findOrFail($id);
+        $this->authorize('update', $appointment);
+
 
         // Check if the appointment is being updated to a conflicting time
         $conflict = Appointment::where('doctor_id', $validated['doctor_id'])

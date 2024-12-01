@@ -158,41 +158,38 @@
                 <li><a href="{{ route('admins.appointment') }}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
                 <li><a href=""><i class="fas fa-calendar-day"></i> Schedules</a></li>
                 <li><a href="{{route('admins.specialization')}}"><i class="fas fa-briefcase-medical"></i> Specialization</a></li>
-             </ul>
+            </ul>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
             <div class="container">
-                <h2 class="text-center">List of Patients</h2>
+                <h2 class="text-center">List of Appointments</h2>
+                <a href="{{ route('specializations.create') }}" style="background-color: #28a745; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">
+                    Add Specialization
+                </a>
+                <br>
 
-                @if($patients->isEmpty())
+                @if($specializations->isEmpty())
                 <p class="empty-message">No patients found.</p>
                 @else
                 <table class="table">
                     <thead>
                         <tr>
                             <th>SN</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Address</th>
-                            <th>Actions</th>
+                            <th>Specialization Name</th>
+                            <th>Action</th>
+
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($patients as $patient)
+                        @foreach ($specializations as $specialization)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $patient->user->name }}</td>
-                            <td>{{ $patient->user->email }}</td>
-                            <td>{{ $patient->user->address ?? 'N/A' }}</td>
-                            <td>
-                                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit">Delete</button>
-                                </form>
-                            </td>
+                            <td>{{ $specialization->name ?? 'N/A' }}</td>
+                            <td colspan="2"> Delete Edit</td>
+
+
                         </tr>
                         @endforeach
                     </tbody>

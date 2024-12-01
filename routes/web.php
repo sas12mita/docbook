@@ -7,6 +7,7 @@ use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\AdminController;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Route;
 
 // Home route for the welcome page
@@ -62,8 +63,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/specializations/{specialization}', [SpecializationController::class, 'show'])->name('specializations.show');
 
     // Create a new specialization (if needed, for admin or authorized users)
-    Route::get('/specializations/create', [SpecializationController::class, 'create'])->name('specializations.create');
-    Route::post('/specializations', [SpecializationController::class, 'store'])->name('specializations.store');
+   // Route::get('/specializations/create', [SpecializationController::class, 'create'])->name('specializations.create');
+   // Route::post('/specializations', [SpecializationController::class, 'store'])->name('specializations.store');
 
     // Edit an existing specialization (for admin or authorized users)
     Route::get('/specializations/{specialization}/edit', [SpecializationController::class, 'edit'])->name('specializations.edit');
@@ -97,6 +98,11 @@ Route::middleware('auth')->group(function () {
     Route::get('ad/patient', [AdminController::class, 'patient'])->name('admins.patient');
     Route::get('ad/doctor', [AdminController::class, 'doctor'])->name('admins.doctor');
     Route::get('ad/appointment', [AdminController::class, 'appointment'])->name('admins.appointment');
+    Route::get('ad/specialization', [AdminController::class, 'specialization'])->name('admins.specialization');
+    Route::get('ad/Specializationcreate',[SpecializationController::class, 'create'])->name('specializations.create');
+    Route::post('ad/specializationstore',[SpecializationController::class, 'store'])->name('specializations.store');
+
+
 });
 
 require __DIR__ . '/auth.php';
