@@ -30,27 +30,58 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required'],
-            'role' => ['required'], // Ensure the role is either 'doctor' or 'patient'
+            'role' => ['required', 'in:admin,doctor,patient'], // Explicitly allow 'admin'
             'phone' => ['required', 'min:10', 'max:10'],
+            'specialization_id' => ['required_if:role,doctor', 'exists:specializations,id'], // Required for doctors only
         ]);
-        
-        $user = User::create(
-            [
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $request->role,
-                'phone' => $request->phone,
-            ]
-        );
+    
+        // Create the user
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'phone' => $request->phone,
+        ]);
+    
         if ($user) {
+            // Generate token for authentication
             $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json(['token' => $token, 'message' => 'register successfully',],201);
+    
+            // Handle role-specific logic
+            if ($request->role === 'doctor') {
+                // Link doctor to a specialization
+                $user->doctor()->create([
+                    'specialization_id' => $request->specialization_id,
+                ]);
+    
+                return response()->json([
+                    'token' => $token,
+                    'message' => 'Doctor registered successfully',
+                ], 201);
+    
+            } elseif ($request->role === 'patient') {
+                // Link patient to their profile
+                $user->patient()->create();
+    
+                return response()->json([
+                    'token' => $token,
+                    'message' => 'Patient registered successfully',
+                ], 201);
+    
+            } elseif ($request->role === 'admin') {
+                // No additional fields required for admin registration
+                return response()->json([
+                    'token' => $token,
+                    'message' => 'Admin registered successfully',
+                ], 201);
+            }
         }
-        else{
-            return response()->json(['message' => 'register failed'], 400);
-        }
+    
+        return response()->json(['message' => 'Registration failed'], 400);
     }
+    
+
     public function profile(Request $request) {
        // dd($request->user());  // To see if the user is authenticated
         
