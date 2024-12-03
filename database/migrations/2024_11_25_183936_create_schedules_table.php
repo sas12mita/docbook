@@ -19,8 +19,6 @@ return new class extends Migration
             $table->time('end_time');
             $table->string('day');
             $table->timestamps();
-
-            // Foreign key constraint
             $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('cascade');
         });
     }

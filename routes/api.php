@@ -3,14 +3,15 @@
 use App\Http\Controllers\Api\v1\AuthController;
 use App\Http\Controllers\Api\v1\DoctorController;
 use App\Http\Controllers\Api\v1\PatientController;
+use App\Http\Controllers\Api\v1\ScheduleController;
 use App\Http\Controllers\Api\v1\SpecializationController;
 use App\Http\Controllers\Api\v1\UserController;
-use App\Http\Controllers\ScheduleController;
 use App\Http\Middleware\AdminMiddleware;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Sanctum;
+
 
 
 Route::get('/user', function (Request $request) {
@@ -31,7 +32,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('specializations',SpecializationController::class)->middleware('role:admin');
         Route::get('schedules', [ScheduleController::class, 'index']);
         Route::get('schedules/{id}', [ScheduleController::class, 'show']);
-        Route::post('schedules', [ScheduleController::class, 'store'])->middleware('role:doctor');
+        Route::post('schedules/', [ScheduleController::class, 'store'])->middleware('role:doctor');
         Route::put('schedules/{id}', [ScheduleController::class, 'update'])->middleware('role:doctor');
         Route::delete('schedules/{id}', [ScheduleController::class, 'destroy'])->middleware('role:doctor');
     });

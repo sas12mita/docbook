@@ -18,7 +18,8 @@ class Schedule extends Model
         'date',
         'start_time',
         'end_time',
-        'day'
+        'day',
+        'status',
     ];
 
     // Define the relationship with the Doctor model
