@@ -14,7 +14,17 @@ class ScheduleController extends Controller
     use AuthorizesRequests;
     public function index()
     {
-        $schedules = Schedule::with('doctor.specialization')->get();
+        $user=Auth::user();
+        if ($user->role === "admin" || $user->role === "patient") {
+            $schedules = Schedule::with('doctor.specialization')->get();
+        }
+        elseif($user->role==="doctor")
+        {
+            $schedules = Schedule::with('doctor.specialization')->where('doctor_id',$user->doctor->id)->get();
+         }
+        else{
+            return response()->json(['message'=>'Unauthorized'],401);
+        }
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
                 'date' => $schedule->date,

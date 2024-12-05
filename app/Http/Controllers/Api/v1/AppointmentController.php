@@ -9,6 +9,7 @@ use App\Models\Specialization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use LDAP\Result;
 
 class AppointmentController extends Controller
 {
@@ -204,5 +205,17 @@ class AppointmentController extends Controller
             'success' => true,
             'message' => 'Appointment deleted successfully.',
         ], 200);
+    }
+    public function approveAppointment($id){
+        $appointment= Appointment::findOrFail($id);
+
+        $this->authorize('approve', $appointment);
+        if(!$appointment)
+        {
+          return response()->json(['message'=>"no appointment found"]);
+        }
+        $appointment->status='approved';
+        $appointment->save();
+        return response()->json(['message'=>"Successfully approved status",'data'=>$appointment]);
     }
 }

@@ -81,14 +81,11 @@ class AuthController extends Controller
         return response()->json(['message' => 'Registration failed'], 400);
     }
     
-
     public function profile(Request $request) {
-       // dd($request->user());  // To see if the user is authenticated
-        
-        if ($request->user()) {
+        if (Auth::check()) {
             return response()->json([
                 'message' => 'Profile fetched',
-                'data' => $request->user(),
+                'data' => Auth::user(),
             ], 200);
         } else {
             return response()->json([
@@ -96,6 +93,7 @@ class AuthController extends Controller
             ], 401);
         }
     }
+    
     public function logout(Request $request)
     {
         // Revoke the token for the currently authenticated user

@@ -36,11 +36,9 @@ class AppointmentPolicy
      * Determine whether the user can update the model.
      */
     public function update(User $user, Appointment $appointment): bool
-    {
-        {
+    { {
             // Only allow the patient who owns the appointment to edit it
             return $appointment->patient_id === $user->patient->id;
-
         }
     }
 
@@ -66,5 +64,9 @@ class AppointmentPolicy
     public function forceDelete(User $user, Appointment $appointment): bool
     {
         //
+    }
+    public function approve(User $user, Appointment $appointment)
+    {
+        return $user->role === 'doctor' && $user->id === $appointment->doctor->user_id;
     }
 }

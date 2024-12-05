@@ -21,6 +21,9 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::group(['middleware' => "auth:sanctum"], function () {
+
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/profile', [AuthController::class, 'profile']);
         Route::apiResource('users', UserController::class)->middleware('role:admin');
         Route::get('doctors', [DoctorController::class, 'index'])->Middleware('role:admin,patient');
         Route::get('patients', [PatientController::class, 'index'])->Middleware('role:admin');
@@ -30,7 +33,7 @@ Route::prefix('v1')->group(function () {
         Route::put('patients/{id}', [PatientController::class, 'update'])->Middleware('role:patient');
         Route::get('doctor/{id}', [DoctorController::class, 'show'])->middleware('role:admin,doctor');
         Route::get('patient/{id}', [PatientController::class, 'show'])->middleware('role:admin,patient');
-        Route::apiResource('specializations',SpecializationController::class)->middleware('role:admin');
+        Route::apiResource('specializations', SpecializationController::class)->middleware('role:admin');
         Route::get('schedules', [ScheduleController::class, 'index']);
         Route::get('schedules/{id}', [ScheduleController::class, 'show']);
         Route::post('schedules/', [ScheduleController::class, 'store'])->middleware('role:doctor');
@@ -41,9 +44,8 @@ Route::prefix('v1')->group(function () {
         Route::post('appointments/', [AppointmentController::class, 'store'])->middleware('role:patient');
         Route::put('appointments/{id}', [AppointmentController::class, 'update'])->middleware('role:patient');
         Route::delete('appointments/{id}', [AppointmentController::class, 'destroy'])->middleware('role:patient');
+        Route::patch('appointments/{id}/approve', [AppointmentController::class, 'approveAppointment'])->middleware('role:doctor');
     });
 });
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::get('/profile', [AuthController::class, 'profile']);
