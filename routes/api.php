@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\AppointmentController;
 use App\Http\Controllers\Api\v1\AuthController;
 use App\Http\Controllers\Api\v1\DoctorController;
 use App\Http\Controllers\Api\v1\PatientController;
@@ -35,6 +36,11 @@ Route::prefix('v1')->group(function () {
         Route::post('schedules/', [ScheduleController::class, 'store'])->middleware('role:doctor');
         Route::put('schedules/{id}', [ScheduleController::class, 'update'])->middleware('role:doctor');
         Route::delete('schedules/{id}', [ScheduleController::class, 'destroy'])->middleware('role:doctor');
+        Route::get('appointments', [AppointmentController::class, 'index']);
+        Route::get('appointments/{id}', [AppointmentController::class, 'show']);
+        Route::post('appointments/', [AppointmentController::class, 'store'])->middleware('role:patient');
+        Route::put('appointments/{id}', [AppointmentController::class, 'update'])->middleware('role:patient');
+        Route::delete('appointments/{id}', [AppointmentController::class, 'destroy'])->middleware('role:patient');
     });
 });
 Route::post('/register', [AuthController::class, 'register']);

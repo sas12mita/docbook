@@ -24,6 +24,7 @@ class ScheduleController extends Controller
                 'specialization' => $schedule->doctor->specialization->name ?? 'N/A', // Accessing specialization name
             ];
         });
+        
         return response()->json([
             'success' => true,
             'data' => $formattedSchedules,
@@ -165,7 +166,7 @@ class ScheduleController extends Controller
         $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
         $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
 
-        // Update the schedule if no overlap is found
+        
         $schedule->date = $request->date;
         $schedule->start_time = $start_time_24;  // Store in 24-hour format
         $schedule->end_time = $end_time_24;      // Store in 24-hour format

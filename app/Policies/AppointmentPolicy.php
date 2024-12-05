@@ -39,7 +39,8 @@ class AppointmentPolicy
     {
         {
             // Only allow the patient who owns the appointment to edit it
-            return $user->role === 'patient' && $appointment->patient_id === $user->id;
+            return $appointment->patient_id === $user->patient->id;
+
         }
     }
 
@@ -48,7 +49,7 @@ class AppointmentPolicy
      */
     public function delete(User $user, Appointment $appointment): bool
     {
-        //
+        return $appointment->patient_id === $user->patient->id;
     }
 
     /**
