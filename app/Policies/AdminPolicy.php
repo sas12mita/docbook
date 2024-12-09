@@ -2,24 +2,23 @@
 
 namespace App\Policies;
 
-use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class PatientPolicy
+class AdminPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Patient $patient): bool
+    public function view(User $user): bool
     {
         //
     }
@@ -35,18 +34,19 @@ class PatientPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Patient $patient)
+    public function update(User $user, User $model): bool
     {
-        // Check if the authenticated user is associated with the patient
-        return $user->id === $patient->user_id;
+        // Allow only the admin user to update their own information
+        return $user->id === $model->id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Patient $patient): bool
+    public function delete(User $user, User $model): bool
     {
-    return $user->id === $patient->user_id;
+        // Allow only the admin user to delete their own account
+        return $user->id === $model->id;
     }
 
     /**

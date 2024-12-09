@@ -12,7 +12,7 @@ class DoctorController extends Controller
 {
     use AuthorizesRequests;
     /**
-     * Display a listing of the resource.
+     * view all doctor by admin
      */
     public function index()
     {
@@ -39,7 +39,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified doctor.
      */
 
     public function show($id)
@@ -62,7 +62,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the doctor resource in storage.
      */
 
     public function update(Request $request, $id)
@@ -108,7 +108,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified doctor from storage.
      */
     public function destroy(string $id)
     {

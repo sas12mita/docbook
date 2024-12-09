@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class PatientController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display list all patient .
      */
     use AuthorizesRequests;
     public function index()
@@ -37,7 +37,9 @@ class PatientController extends Controller
     {
         //
     }
-
+ /**
+     *   view particular patient
+     */
     public function show($id)
     {
         // Find the patient by ID
@@ -57,7 +59,10 @@ class PatientController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, $id)
+ /**
+     *   patient upadte thier own profile
+     */
+        public function update(Request $request, $id)
             {
                 $request->validate([
                     'name' => 'required|string|max:255',
@@ -90,12 +95,12 @@ class PatientController extends Controller
     
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified patient from storage.
      */
     public function destroy(string $id)
     {
         $patient = Patient::find($id);
-
+        $this->authorize('delete', $patient);
         if (!$patient) {
             return response()->json([
                 'success' => false,

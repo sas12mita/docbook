@@ -14,31 +14,30 @@ use LDAP\Result;
 class AppointmentController extends Controller
 {
     use AuthorizesRequests;
+    /**
+     *   View Appointment
+     */
     public function index()
     {
-        $user=Auth::user();
-        if($user->role==="patient")
-        {
-        $appointments = Appointment::with('doctor.specialization')
-        ->where('patient_id', $user->patient->id)
-        ->get();
-        }elseif($user->role==="doctor")
-        {
-            $appointments = Appointment::with('doctor.specialization')->where('doctor_id',$user->doctor->id)->get();
+        $user = Auth::user();
+        if ($user->role === "patient") {
+            $appointments = Appointment::with('doctor.specialization')
+                ->where('patient_id', $user->patient->id)
+                ->get();
+        } elseif ($user->role === "doctor") {
+            $appointments = Appointment::with('doctor.specialization')->where('doctor_id', $user->doctor->id)->get();
+        } elseif ($user->role === "admin") {
+            $appointments = Appointment::with('doctor.specialization')->get();
+        } else {
+            return response()->json(['message' => 'You are not authorized to access this resource'], 401);
         }
-        elseif($user->role==="admin")
-        {
-            $appointments = Appointment::with('doctor.specialization');
 
-        }else{
-            return response()->json(['message'=>'You are not authorized to access this resource'],401);
-        }
-       
         $formattedAppointment = $appointments->map(function ($appointment) {
             return [
                 'date' => $appointment->appointment_date,
                 'start_time' => $appointment->start_time,
                 'end_time' => $appointment->end_time,
+                'status' => $appointment->status,
                 'doctor_name' => $appointment->doctor->user->name, // Accessing doctor's name
                 'specialization' => $appointment->doctor->specialization->name ?? 'N/A', // Accessing specialization name
 
@@ -50,15 +49,23 @@ class AppointmentController extends Controller
             'message' => 'Appointment with doctor and specialization details retrieved successfully.',
         ], 200);
     }
+    /**
+     *   Patient can create appointment
+     */
     public function store(Request $request)
     {
+
+        $user = Auth::user();
+        $patientId = $user->patient->id;
+
+        $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+            'appointment_date' => 'required|date|after_or_equal:today',
+        ]);
 
         $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
         $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
 
-
-        $user = Auth::user();
-        $patient = $user->patient;
         $doctorSchedule = Schedule::where('doctor_id', $request->doctor_id)
             ->where('date', $request->appointment_date)
             ->where(function ($query) use ($start_time_24, $end_time_24) {
@@ -101,7 +108,7 @@ class AppointmentController extends Controller
 
         // Create the appointment if there are no conflicts
         $appointment = new Appointment();
-        $appointment->patient_id = $patient->id;
+        $appointment->patient_id = $patientId;
         $appointment->doctor_id = $request->doctor_id;
         $appointment->appointment_date = $request->appointment_date;
         $appointment->start_time = $start_time_24;  // Store in 24-hour format
@@ -116,14 +123,34 @@ class AppointmentController extends Controller
     }
 
 
-    public function show(string $id)
+    public function show($id)
     {
-        //
+
+        $appointment = Appointment::with(['patient.user', 'doctor.user', 'doctor.specialization'])
+            ->findOrFail($id);
+        return response()->json([
+            'appointment_id' => $appointment->id,
+            'patient_name' => $appointment->patient->user->name,
+            'doctor_name' => $appointment->doctor->user->name,
+            'specialization_name' => $appointment->doctor->specialization->name,
+            'appointment_date' => $appointment->appointment_date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+
+        ]);
     }
+    /**
+     * Update the Appointment resource in storage
+     */
 
     public function update(Request $request, string $id)
     {
-
+        $request->validate([
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'appointment_date' => 'required|date',
+            'doctor_id' => 'required|integer|exists:doctors,id',
+        ]);
         $appointment = Appointment::find($id);
 
         if (!$appointment) {
@@ -192,7 +219,9 @@ class AppointmentController extends Controller
             'message' => 'Appointment updated successfully.',
         ], 200);
     }
-
+    /**
+     *   patient can delet his/her appointment
+     */
     public function destroy(string $id)
     {
         $appointment = Appointment::findOrFail($id);
@@ -206,16 +235,24 @@ class AppointmentController extends Controller
             'message' => 'Appointment deleted successfully.',
         ], 200);
     }
-    public function approveAppointment($id){
-        $appointment= Appointment::findOrFail($id);
+    /**
+     *   doctor approved his/her appointment done by patient
+     */
+    public function approveAppointment(Request $request , string $id)
+    {
+        
+        $request->validate([
+            'status' => ['required', 'in:pending,approved'], // Explicitly allow 'admin'
+        ]);
+        $appointment = Appointment::findOrFail($id);
+        
 
         $this->authorize('approve', $appointment);
-        if(!$appointment)
-        {
-          return response()->json(['message'=>"no appointment found"]);
+        if (!$appointment) {
+            return response()->json(['message' => "no appointment found"]);
         }
-        $appointment->status='approved';
+        $appointment->status = 'approved';
         $appointment->save();
-        return response()->json(['message'=>"Successfully approved status",'data'=>$appointment]);
+        return response()->json(['message' => "Successfully approved status", 'data' => $appointment]);
     }
 }

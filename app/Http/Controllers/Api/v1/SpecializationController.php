@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class SpecializationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the specialization.
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class SpecializationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created specification in storage.
      */
     public function store(Request $request)
     {
@@ -60,6 +60,9 @@ class SpecializationController extends Controller
     }
 
    
+    /**
+     *   update specialization
+     */
     public function update(Request $request, string $id)
     {      
         $request->validate([
@@ -85,7 +88,9 @@ class SpecializationController extends Controller
         ], 200);
     }
 
-
+ /**
+     *   destory particular specializatioon from storage
+     */
     public function destroy(string $id)
     {
         

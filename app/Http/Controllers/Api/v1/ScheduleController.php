@@ -12,18 +12,19 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class ScheduleController extends Controller
 {
     use AuthorizesRequests;
+     /**
+     * display all schedule
+     */
     public function index()
     {
-        $user=Auth::user();
+        $user = Auth::user();
+        
         if ($user->role === "admin" || $user->role === "patient") {
             $schedules = Schedule::with('doctor.specialization')->get();
-        }
-        elseif($user->role==="doctor")
-        {
-            $schedules = Schedule::with('doctor.specialization')->where('doctor_id',$user->doctor->id)->get();
-         }
-        else{
-            return response()->json(['message'=>'Unauthorized'],401);
+        } elseif ($user->role === "doctor") {
+            $schedules = Schedule::with('doctor.specialization')->where('doctor_id', $user->doctor->id)->get();
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
@@ -34,39 +35,54 @@ class ScheduleController extends Controller
                 'specialization' => $schedule->doctor->specialization->name ?? 'N/A', // Accessing specialization name
             ];
         });
-        
+
         return response()->json([
             'success' => true,
             'data' => $formattedSchedules,
             'message' => 'Schedules with doctor and specialization details retrieved successfully.',
         ], 200);
     }
+     /**
+     *   create schedule by doctor
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'start_time' => 'required|date_format:h:i A',  // Accepts 12-hour format with AM/PM
-            'end_time' => 'required|date_format:h:i A|after:start_time',  // Accepts 12-hour format with AM/PM
-            'day' => 'required|string',
-            'status' => 'nullable|in:available,unavailable',
-        ]);
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        // Check if the user is a doctor
+        if (!$user->doctor) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized, please login.',
-            ], 401);
+                'message' => 'Only doctors can create schedules.',
+            ], 403);
         }
-        $user = Auth::user();
-        $doctor = Doctor::where('user_id', $user->id)->first();
-        $this->authorize('update', $doctor);
 
-        $overlappingSchedule = Schedule::where('doctor_id', $doctor->id)
+        $doctorId = $user->doctor->id;
+
+        // Validate request
+        $request->validate([
+            'date' => 'required|date',
+            'day' => 'required|string',
+            'start_time' => 'required|date_format:h:i A',
+            'end_time' => 'required|date_format:h:i A',
+            'status' => 'nullable|in:available,unavailable',
+        ]);
+
+        // Convert times to 24-hour format
+        try {
+            $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
+            $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid time format. Use "h:i A" format (e.g., "7:00 AM").',
+            ], 400);
+        }
+
+        // Check for overlapping schedules
+        $overlappingSchedule = Schedule::where('doctor_id', $doctorId)
             ->where('date', $request->date)
-            ->where(function ($query) use ($request) {
-                // Convert 12-hour AM/PM time to 24-hour format for comparison
-                $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
-                $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
-
+            ->where(function ($query) use ($start_time_24, $end_time_24) {
                 $query->whereBetween('start_time', [$start_time_24, $end_time_24])
                     ->orWhereBetween('end_time', [$start_time_24, $end_time_24])
                     ->orWhere(function ($query) use ($start_time_24, $end_time_24) {
@@ -83,16 +99,12 @@ class ScheduleController extends Controller
             ], 400);
         }
 
-        // Convert the 12-hour AM/PM format to 24-hour format
-        $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
-        $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
-
-        
+        // Create the schedule
         $schedule = new Schedule();
-        $schedule->doctor_id = $doctor->id; // Assign the authenticated doctor's ID
+        $schedule->doctor_id = $doctorId;
         $schedule->date = $request->date;
-        $schedule->start_time = $start_time_24;  // Store in 24-hour format
-        $schedule->end_time = $end_time_24;      // Store in 24-hour format
+        $schedule->start_time = $start_time_24;
+        $schedule->end_time = $end_time_24;
         $schedule->day = $request->day;
         $schedule->status = $request->status ?? 'available';
         $schedule->save();
@@ -104,11 +116,32 @@ class ScheduleController extends Controller
         ], 201);
     }
 
+ /**
+     *   show specified schedule
+     */
     public function show(string $id)
     {
-        //
+        // Attempt to find the schedule by ID
+        $schedule = Schedule::find($id);
+    
+        if (!$schedule) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Schedule not found.',
+            ], 404);
+        }
+    
+        // Return the schedule data
+        return response()->json([
+            'success' => true,
+            'data' => $schedule,
+            'message' => 'Schedule retrieved successfully.',
+        ], 200);
     }
-
+    
+ /**
+     *   update specific schedule
+     */
     public function update(Request $request, $id)
     {
 
@@ -117,8 +150,6 @@ class ScheduleController extends Controller
         // Validate incoming request with AM/PM format
         $request->validate([
             'date' => 'required|date',
-            'start_time' => 'required|date_format:h:i A',  // Accepts 12-hour format with AM/PM
-            'end_time' => 'required|date_format:h:i A|after:start_time',  // Accepts 12-hour format with AM/PM
             'day' => 'required|string',
             'status' => 'nullable|in:available,unavailable',
         ]);
@@ -176,7 +207,7 @@ class ScheduleController extends Controller
         $start_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->start_time)->format('H:i');
         $end_time_24 = \Carbon\Carbon::createFromFormat('h:i A', $request->end_time)->format('H:i');
 
-        
+
         $schedule->date = $request->date;
         $schedule->start_time = $start_time_24;  // Store in 24-hour format
         $schedule->end_time = $end_time_24;      // Store in 24-hour format
@@ -192,20 +223,19 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified Schedule from storage.
      */
     public function destroy(string $id)
     {
         $schedule = Schedule::find($id);
-    
+        $this->authorize('delete', $schedule);
         if (!$schedule) {
             return response()->json(['message' => 'No schedule available'], 404);
         }
-        $this->authorize('delete', $schedule);
     
+
         $schedule->delete();
-    
+
         return response()->json(['message' => 'Schedule deleted successfully'], 200);
     }
-    
 }

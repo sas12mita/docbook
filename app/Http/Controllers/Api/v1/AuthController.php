@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
+    /**
+   * User Login
+    */
     public function login(Request $request)
     {
         $request->validate([
@@ -24,6 +27,9 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json(['token' => $token, 'token_type'=>'Bearer' , 'message' => 'login successfully',], 200);
     }
+     /**
+   * User Register
+    */
     public function register(Request $request)
     {
         $request->validate([
@@ -45,12 +51,9 @@ class AuthController extends Controller
         ]);
     
         if ($user) {
-            // Generate token for authentication
             $token = $user->createToken('auth_token')->plainTextToken;
     
-            // Handle role-specific logic
             if ($request->role === 'doctor') {
-                // Link doctor to a specialization
                 $user->doctor()->create([
                     'specialization_id' => $request->specialization_id,
                 ]);
@@ -61,7 +64,7 @@ class AuthController extends Controller
                 ], 201);
     
             } elseif ($request->role === 'patient') {
-                // Link patient to their profile
+  
                 $user->patient()->create();
     
                 return response()->json([
@@ -70,7 +73,7 @@ class AuthController extends Controller
                 ], 201);
     
             } elseif ($request->role === 'admin') {
-                // No additional fields required for admin registration
+                
                 return response()->json([
                     'token' => $token,
                     'message' => 'Admin registered successfully',
@@ -80,8 +83,11 @@ class AuthController extends Controller
     
         return response()->json(['message' => 'Registration failed'], 400);
     }
-    
+     /**
+   * View user Profile
+    */
     public function profile(Request $request) {
+        $user = Auth::user();
         if (Auth::check()) {
             return response()->json([
                 'message' => 'Profile fetched',
@@ -93,15 +99,12 @@ class AuthController extends Controller
             ], 401);
         }
     }
-    
+     /**
+   * User Logout
+    */
     public function logout(Request $request)
     {
-        // Revoke the token for the currently authenticated user
         $request->user()->currentAccessToken()->delete();
-    
-        // Optionally, invalidate the session for web users
-        // Auth::logout();  // Uncomment this line if using session-based login
-    
         return response()->json([
             'message' => 'Logged out successfully',
         ], 200);
