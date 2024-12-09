@@ -15,7 +15,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('admins.dashboard'); // This is the view for the admin panel's main page
+        return view('admins.dashboard', compact('totalPatients', 'totalDoctor', 'totalAppointment', 'totalSpecilaization'));
     }
 
     // This method handles the custom route for the dashboard
@@ -40,28 +40,28 @@ class AdminController extends Controller
     public function patient(Request $request)
     {
         $patients = Patient::with('user')->get(); // Eager load the user relationship
-        return view('admins.patient', compact('patients'));
+        return view('admins.patient', compact('patients', 'totalPatients'));
     }
     public function doctor(Request $request)
     {
 
         $doctors = Doctor::with('user')->get(); // Eager load the user relationship
-        return view('admins.doctor', compact('doctors'));
+        return view('admins.doctor', compact('doctors', 'totalDoctor'));
     }
     public function appointment(Request $request)
     {
         $appointments = Appointment::with(['doctor', 'patient'])->get();
-        return view('admins.appointment', compact('appointments'));
+        $totalAppointment = Appointment::count();
+        return view('admins.appointment', compact('appointments', 'totalAppointment'));
     }
     /**
      * Display the specified resource.
      */
     public function specialization(Request $request)
     {
-        $specializations=Specialization::all();
-        return view('admins.specialization', compact('specializations'));
-   
-
+        $specializations = Specialization::all();
+        $totalSpecilaization = Specialization::count();
+        return view('admins.specialization', compact('specializations', 'totalSpecilaization'));
     }
     public function show(string $id)
     {

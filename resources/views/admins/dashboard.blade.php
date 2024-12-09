@@ -175,31 +175,31 @@
                 <div class="card card-patients">
                     <i class="fas fa-user-injured"></i>
                     <a href="{{ route('admins.patient') }}">Patients</a>
-                    <p>Total: <span>150</span></p>
+                    <p>Total: <span>4</span></p>
                 </div>
 
                 <div class="card card-doctors">
                     <i class="fas fa-user-md"></i>
                     <a href="{{ route('admins.doctor') }}">Doctors</a>
-                    <p>Total: <span>53</span></p>
+                    <p>Total: <span>13</span></p>
                 </div>
 
                 <div class="card card-appointments">
                     <i class="fas fa-calendar-check"></i>
                     <a href="{{ route('admins.appointment') }}">Appointments</a>
-                    <p>Total: <span>44</span></p>
+                    <p>Total: <span>14</span></p>
                 </div>
 
                 <div class="card card-specializations">
                     <i class="fas fa-briefcase-medical"></i>
                     <a href="{{ route('admins.specialization') }}">Specialization</a>   
-                    <p>Total: <span>44</span></p>
+                    <p>Total: <span>4</span></p>
                 </div>
 
                 <div class="card card-schedules">
                     <i class="fas fa-calendar-day"></i>
                     <h3>Schedules</h3>
-                    <p>Total: <span>65</span></p>
+                    <p>Total: <span>5</span></p>
                 </div>
             </div>
         </div>
